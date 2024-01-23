@@ -26,7 +26,8 @@ public class PlayerMovement2D : MonoBehaviour
     {
         horizontalInput = Input.GetAxis("Horizontal");
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        bool isOnTheGround = IsOnTheGround();
+        if (Input.GetKeyDown(KeyCode.Space) && isOnTheGround)
         {
             rigidbody2D.velocity = Vector2.up * jumpSpeed;
         }
@@ -35,5 +36,22 @@ public class PlayerMovement2D : MonoBehaviour
     private void FixedUpdate()
     {
         rigidbody2D.velocity = new Vector2(moveSpeed * horizontalInput, rigidbody2D.velocity.y);
+    }
+
+    private bool IsOnTheGround()
+    {
+        float extraHeight = 0.05f;
+        RaycastHit2D raycastHit2D = Physics2D.Raycast(boxCollider2D.bounds.center, 
+                                                      Vector2.down, 
+                                                      boxCollider2D.bounds.extents.y + extraHeight,
+                                                      groundLayerMask);
+        bool isOnTheGround = raycastHit2D.collider != null;
+
+        Color raycatHitColor = isOnTheGround ? Color.green : Color.red;
+        Debug.DrawRay(boxCollider2D.bounds.center, 
+                      Vector2.down * (boxCollider2D.bounds.extents.y + extraHeight), 
+                      raycatHitColor);
+
+        return isOnTheGround;
     }
 }
